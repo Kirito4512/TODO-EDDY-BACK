@@ -8,15 +8,35 @@ import { connectToDB } from "./db/connect.js";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      process.env.FRONT_ORIGIN || ""
-    ].filter(Boolean),
-    credentials: true
-  })
-);
+// ✅ CORS configuration - Lista blanca de dominios permitidos
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://todo-pwa-front-ftp.vercel.app",
+  "https://todo-eddy-front-xb89.vercel.app"
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Si no hay origin (requests de herramientas, server-to-server) permitir
+    if (!origin) return callback(null, true);
+    // Si está en whitelist, permitir
+    if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    // Permitir cualquier dominio .vercel.app (para previews)
+    if (origin && origin.includes(".vercel.app")) return callback(null, true);
+    // Denegar otros
+    callback(new Error("CORS not allowed"));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+// ✅ Manejar preflight (OPTIONS) para todas las rutas
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use(morgan("dev"));
 
