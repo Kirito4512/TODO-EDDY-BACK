@@ -34,8 +34,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// ✅ Manejar preflight (OPTIONS) para todas las rutas
-app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan("dev"));
