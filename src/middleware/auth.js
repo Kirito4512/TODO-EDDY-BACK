@@ -1,4 +1,4 @@
-// src/middleware/auth.js
+// src/middleware/auth.j
 import jwt from 'jsonwebtoken';
 
 export function auth(req, res, next) {
